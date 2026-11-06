@@ -204,7 +204,7 @@ agh_add_steam_upstream() {
 }
 
 # Домены Steam, для которых создаются правила OpenClash и отдельный DNS upstream в AGH.
-STEAM_DOMAINS="deploy.static.akamaitechnologies.com steampowered.com steamstatic.com steamserver.net steam-api.com steam.tv steamcommunity-a.akamaihd.net steamcommunity.com"
+STEAM_DOMAINS="deploy.static.akamaitechnologies.com steampowered.com steamstatic.com steamserver.net steam-api.com steam.tv steamcommunity-a.akamaihd.net steamcommunity.com steamcontent.com"
 
 # Создание случайных имен для секций
 rand_id() { tr -dc 'a-f0-9' </dev/urandom | head -c 6; }
