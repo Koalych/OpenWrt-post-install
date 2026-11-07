@@ -3,7 +3,8 @@
 # между tailscale0, LAN и WAN, а также объявляет LAN-подсеть и exit node.
 step_tailscale() {
     ask_yn "Установить Tailscale?" || return 0
-    pkg_add tailscale luci-app-tailscale-community
+    refresh_package_index || return 1
+    pkg_add tailscale luci-app-tailscale-community || return 1
 
     uci set firewall.tailscale=zone
     uci set firewall.tailscale.name='Tailscale'

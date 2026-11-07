@@ -39,7 +39,8 @@ forkop_add_link() {
 
 forkop_install() {
     log "Установка Forkop"
-    sh <(wget -O - https://raw.githubusercontent.com/ushan0v/forkop/main/install.sh)
+    refresh_package_index || return 1
+    run_remote_installer https://raw.githubusercontent.com/ushan0v/forkop/main/install.sh || return 1
     pkg_installed forkop || { warn "Forkop не установился"; return 1; }
 
     if agh_installed; then

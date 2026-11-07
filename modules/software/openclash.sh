@@ -87,9 +87,11 @@ openclash_install () {
     log "Установка OpenClash + WARP"
     ask_yn "Установить OpenClash?" || return 0
 
+    refresh_package_index || return 1
+    # OpenClash требует dnsmasq-full вместо dnsmasq (то же, что с wpad)
     ensure_dnsmasq_full || return 1
     pkg_add bash curl ca-bundle ip-full ruby ruby-yaml kmod-tun kmod-inet-diag \
-        unzip kmod-nft-tproxy luci-compat luci luci-base
+        unzip kmod-nft-tproxy luci-compat luci luci-base || return 1
 
     # Удаляем остатки предыдущей загрузки, чтобы при сетевой ошибке не установить старый APK.
     rm -f /tmp/openclash_version /tmp/openclash.apk
@@ -99,7 +101,7 @@ openclash_install () {
     [ -f "/tmp/openclash.apk" ] && apk add -q --force-overwrite --clean-protected --allow-untrusted /tmp/openclash.apk || echo "OpenClash download failed"
 
     pkg_installed luci-app-openclash || { warn "OpenClash не установился"; return 1; }
-    openclash_configure
+    openclash_configure || return 1
 
     if ask_yn "Добавить правила для обхода блокировки Steam?"; then
         openclash_write_rules

@@ -31,6 +31,7 @@ step_base_packages() {
 step_personal_packages() {
     if ask_yn "Установить пакеты которые использует автор?
 Список пакетов: bash, lsd, ripgrep, ss, btop, net-tools-netstat, luci-mod-dashboard, ncdu"; then
+        refresh_package_index || return 1
         pkg_add bash lsd ripgrep ss btop net-tools-netstat luci-mod-dashboard ncdu
         log_done "Завершено. Свободное место: $(get_free_space) MB"
     fi
@@ -42,7 +43,10 @@ step_additional_packages() {
     if ask_yn "Нужны дополнительные пакеты?"; then
         printf 'Имена пакетов через пробел: '
         read -r _pk
-        [ -n "$_pk" ] && pkg_add $_pk
+        if [ -n "$_pk" ]; then
+            refresh_package_index || return 1
+            pkg_add $_pk || return 1
+        fi
         log_done "Завершено. Свободное место: $(get_free_space) MB"
     fi
 }

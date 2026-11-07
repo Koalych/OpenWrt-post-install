@@ -45,6 +45,32 @@ ask() {
 # Проверка наличия пакета и короткая обёртка над apk add.
 pkg_installed() { apk info -e "$1" >/dev/null 2>&1; }
 pkg_add()       { apk add "$@"; }
+refresh_package_index() { apk update; }
+
+# Скачивает и запускает сторонний установщик через временный файл.
+# Process substitution не поддерживается некоторыми реализациями /bin/sh в OpenWrt.
+run_remote_installer() {
+    _installer_url=$1
+    if ! command -v wget >/dev/null 2>&1; then
+        refresh_package_index || return 1
+        pkg_add wget-ssl || return 1
+    fi
+    _installer_file=$(mktemp /tmp/openwrt-installer.XXXXXX) || {
+        warn "Не удалось создать временный файл установщика"
+        return 1
+    }
+
+    if ! wget -qO "$_installer_file" "$_installer_url" || [ ! -s "$_installer_file" ]; then
+        rm -f "$_installer_file"
+        warn "Не удалось скачать установщик: $_installer_url"
+        return 1
+    fi
+
+    sh "$_installer_file"
+    _installer_status=$?
+    rm -f "$_installer_file"
+    return "$_installer_status"
+}
 
 # Создание случайных имен для секций
 rand_id() { tr -dc 'a-f0-9' </dev/urandom | head -c 6; }

@@ -57,11 +57,10 @@ yaml_set_scalar() {
 # DNS: AdGuard Home на :53 (все интерфейсы), dnsmasq на :54 (DHCP + локальные имена)
 # Устанавливает AGH и переносит локальный dnsmasq на порт 54.
 # Клиенты продолжают обращаться к роутеру на :53, где после мастера будет слушать AGH.
-step_dns() {
+agh_install() {
     ask_yn "Установить AdGuard Home (DNS на :53, dnsmasq переедет на :54)?" || return 0
-
-    # OpenClash требует dnsmasq-full вместо dnsmasq (то же, что с wpad)
-    [ "$COUNTRY" != vn ] || ensure_dnsmasq_full || return 1
+    refresh_package_index || return 1
+    pkg_installed curl || pkg_add curl || return 1
 
     # 1. Скачиваем и ставим AGH, пока системный DNS ещё жив
     curl -fsSL https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v

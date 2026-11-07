@@ -1,7 +1,8 @@
 #!/bin/sh
 netshift_install() {
     log "Установка Netshift"
-    sh <(wget -O - https://raw.githubusercontent.com/yandexru45/netshift/refs/heads/main/install.sh)
+    refresh_package_index || return 1
+    run_remote_installer https://raw.githubusercontent.com/yandexru45/netshift/refs/heads/main/install.sh || return 1
     pkg_installed netshift || { warn "Netshift не установился"; return 1; }
 
     if agh_installed; then

@@ -1,8 +1,29 @@
 #!/bin/sh
-# Настраивает оба штатных радио GL-MT3000 одинаково.
+# Настраивает одинаково все найденные Wi-Fi точки доступа.
 # Выполнять по кабелю: смена wpad и перезагрузка Wi-Fi могут оборвать беспроводное соединение.
 step_wifi() {
     log "Wi-Fi"
+
+    # Ищем существующие радиомодули и связанные с ними точки доступа.
+    # Секции могут называться не только radio0/default_radio0.
+    _wifi_radios=$(uci show wireless 2>/dev/null | awk -F= '$2 == "wifi-device" { section=$1; sub(/^wireless\./, "", section); print section }')
+    _wifi_ifaces=$(uci show wireless 2>/dev/null | awk -F= '$2 == "wifi-iface" { section=$1; sub(/^wireless\./, "", section); print section }')
+    _wifi_pairs=
+    for _r in $_wifi_radios; do
+        for _iface in $_wifi_ifaces; do
+            _iface_device=$(uci -q get "wireless.$_iface.device") || continue
+            _iface_mode=$(uci -q get "wireless.$_iface.mode")
+            [ "$_iface_device" = "$_r" ] && [ "$_iface_mode" = "ap" ] || continue
+            _wifi_pairs="$_wifi_pairs $_r|$_iface"
+        done
+    done
+
+    if [ -z "$_wifi_pairs" ]; then
+        warn "Радиомодули Wi-Fi с точками доступа не найдены, настройку пропускаю"
+        return 0
+    fi
+
+    refresh_package_index || return 1
 
     # Полный wpad нужен для 802.11k/v (band steering) и WPA3.
     # ВНИМАНИЕ: на время замены Wi-Fi пропадает, запускать по кабелю.
@@ -29,19 +50,20 @@ step_wifi() {
         printf '\n'
     done
 
-    # Один SSID на всех радио. Канал не трогаю (по умолчанию auto).
-    for _r in radio0 radio1; do
-        uci -q get wireless.$_r >/dev/null || continue
-        uci set wireless.$_r.country="$WIFI_CC"
-        # на свежей системе флаг disabled стоит на wifi-iface: убираем (на radio тоже, на всякий случай)
-        uci -q delete wireless.$_r.disabled
-        uci -q delete wireless.default_$_r.disabled
-        uci set wireless.default_$_r.ssid="$_ssid"
-        uci set wireless.default_$_r.encryption="$_enc"
-        uci set wireless.default_$_r.key="$_key"
+    # Один SSID и пароль для каждой найденной точки доступа. Каналы не меняю.
+    for _pair in $_wifi_pairs; do
+        _r=${_pair%%|*}
+        _iface=${_pair#*|}
+        uci set "wireless.$_r.country=$WIFI_CC"
+        # На свежей системе disabled может находиться на radio или wifi-iface.
+        uci -q delete "wireless.$_r.disabled"
+        uci -q delete "wireless.$_iface.disabled"
+        uci set "wireless.$_iface.ssid=$_ssid"
+        uci set "wireless.$_iface.encryption=$_enc"
+        uci set "wireless.$_iface.key=$_key"
         if pkg_installed wpad-mbedtls; then
-            uci set wireless.default_$_r.ieee80211k='1'
-            uci set wireless.default_$_r.bss_transition='1'
+            uci set "wireless.$_iface.ieee80211k=1"
+            uci set "wireless.$_iface.bss_transition=1"
         fi
     done
     uci commit wireless

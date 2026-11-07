@@ -55,11 +55,12 @@ system_menu() {
     clear
     printf '\n========== Система ==========\n'
     printf '1. Обновление и базовые пакеты\n'
-    printf '2. Дополнительные пакеты\n'
-    printf '3. Настройка системы и времени\n'
-    printf '4. Настройка MOTD\n'
-    printf '5. Изменить оболочку (пока не реализовано)\n'
-    printf '6. Настройка SSH (пока не реализовано)\n'
+    printf '2. Персональный набор пакетов\n'
+    printf '3. Добавить выбранные пакеты\n'
+    printf '4. Настройка системы и времени\n'
+    printf '5. Настройка MOTD\n'
+    printf '6. Изменить оболочку (пока не реализовано)\n'
+    printf '7. Настройка SSH (пока не реализовано)\n'
     printf '0. Назад\n\n'
     printf 'Выбери действие: '
 }
@@ -77,11 +78,14 @@ network_menu() {
 programs_menu() {
     clear
     printf '\n========== Программы ==========\n'
-    printf '1. Установить Forkop или Netshift\n'
-    printf '2. Установить OpenClash\n'
-    printf '3. Установить Tailscale\n'
-    printf '4. Установить Wake-on-LAN\n'
-    printf '5. Настроить USB-накопитель и Transmission\n'
+    printf '1. Установить AdGuard Home\n'
+    printf '2. Установить Forkop\n'
+    printf '3. Установить Netshift\n'
+    printf '4. Установить OpenClash\n'
+    printf '5. Установить Tailscale\n'
+    printf '6. Установить Wake-on-LAN\n'
+    printf '7. Настроить поддержку USB-накопителя\n'
+    printf '8. Установить Transmission\n'
     printf '0. Назад\n\n'
     printf 'Выбери действие: '
 }
@@ -106,10 +110,11 @@ menu() {
                 read -r _section_choice || continue
                 case "$_section_choice" in
                     1) step_base_packages ;;
-                    2) step_personal_packages && step_additional_packages ;;
-                    3) step_country && step_system ;;
-                    4) step_banners ;;
-                    5|6) printf 'Этот пункт пока не реализован.\n' ;;
+                    2) step_personal_packages ;;
+                    3) step_additional_packages ;;
+                    4) step_country && step_system ;;
+                    5) step_banners ;;
+                    6|7) printf 'Этот пункт пока не реализован.\n' ;;
                     0) ;;
                     *) printf 'Некорректный ввод.\n' ;;
                 esac
@@ -120,7 +125,7 @@ menu() {
                 case "$_section_choice" in
                     1) step_lan ;;
                     2) step_country && step_wifi ;;
-                    3) step_country && step_dns ;;
+                    3) agh_install ;;
                     0) ;;
                     *) printf 'Некорректный ввод.\n' ;;
                 esac
@@ -129,11 +134,14 @@ menu() {
                 programs_menu
                 read -r _section_choice || continue
                 case "$_section_choice" in
-                    1) setup_ru ;;
-                    2) setup_vn ;;
-                    3) step_tailscale ;;
-                    4) step_wol ;;
-                    5) step_storage ;;
+                    1) agh_install ;;
+                    2) forkop_install ;;
+                    3) netshift_install ;;
+                    4) openclash_install ;;
+                    5) step_tailscale ;;
+                    6) step_wol ;;
+                    7) step_usb_storage ;;
+                    8) transmission_install ;;
                     0) ;;
                     *) printf 'Некорректный ввод.\n' ;;
                 esac
@@ -155,4 +163,5 @@ menu() {
     done
 }
 
+clear
 menu "$@"
