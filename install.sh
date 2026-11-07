@@ -40,6 +40,7 @@ _SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd) || exit 1
 . "$_SCRIPT_DIR/modules/system/steps.sh"
 
 show_menu() {
+    clear
     printf '\n========== OpenWrt Post Install ==========\n'
     printf '1. Система\n'
     printf '2. Сеть\n'
@@ -51,6 +52,7 @@ show_menu() {
 }
 
 system_menu() {
+    clear
     printf '\n========== Система ==========\n'
     printf '1. Обновление и базовые пакеты\n'
     printf '2. Дополнительные пакеты\n'
@@ -63,6 +65,7 @@ system_menu() {
 }
 
 network_menu() {
+    clear
     printf '\n========== Сеть ==========\n'
     printf '1. Настроить LAN\n'
     printf '2. Настроить Wi-Fi\n'
@@ -72,6 +75,7 @@ network_menu() {
 }
 
 programs_menu() {
+    clear
     printf '\n========== Программы ==========\n'
     printf '1. Установить Forkop или Netshift\n'
     printf '2. Установить OpenClash\n'
@@ -83,6 +87,7 @@ programs_menu() {
 }
 
 additional_menu() {
+    clear
     printf '\n========== Дополнительные настройки ==========\n'
     printf '1. Настроить MOTD\n'
     printf '2. Настроить боковой переключатель GL-MT3000\n'
