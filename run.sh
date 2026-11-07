@@ -4,7 +4,7 @@ TMP_DIR=$(mktemp -d /tmp/openwrt-post-install.XXXXXX) || exit 1
 trap 'rm -rf "$TMP_DIR"' 0
 
 ARCHIVE="$TMP_DIR/repository.tar.gz"
-REPO_URL="https://codeload.github.com/Koalych/OpenWrt-post-install/tar.gz/refs/heads/main"
+REPO_URL="https://codeload.github.com/Koalych/OpenWrt-post-install/tar.gz/refs/heads/test"
 
 echo "Скачивание проекта..."
 if ! wget -qO "$ARCHIVE" "$REPO_URL" || [ ! -s "$ARCHIVE" ]; then
@@ -17,7 +17,7 @@ if ! tar -xzf "$ARCHIVE" -C "$TMP_DIR"; then
     exit 1
 fi
 
-INSTALLER="$TMP_DIR/OpenWrt-post-install-main/install.sh"
+INSTALLER="$TMP_DIR/OpenWrt-post-install-test/install.sh"
 if [ ! -s "$INSTALLER" ]; then
     echo "Ошибка: в репозитории не найден install.sh." >&2
     exit 1
