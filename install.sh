@@ -97,6 +97,7 @@ additional_menu() {
 
 menu() {
     while true; do
+        step_preflight
         show_menu
         read -r _menu_choice || return 0
         case "$_menu_choice" in
@@ -104,10 +105,10 @@ menu() {
                 system_menu
                 read -r _section_choice || continue
                 case "$_section_choice" in
-                    1) step_preflight && step_base_packages ;;
-                    2) step_preflight && step_personal_packages && step_additional_packages ;;
-                    3) step_preflight && step_country && step_system ;;
-                    4) step_preflight && step_banners ;;
+                    1) step_base_packages ;;
+                    2) step_personal_packages && step_additional_packages ;;
+                    3) step_country && step_system ;;
+                    4) step_banners ;;
                     5|6) printf 'Этот пункт пока не реализован.\n' ;;
                     0) ;;
                     *) printf 'Некорректный ввод.\n' ;;
@@ -117,9 +118,9 @@ menu() {
                 network_menu
                 read -r _section_choice || continue
                 case "$_section_choice" in
-                    1) step_preflight && step_lan ;;
-                    2) step_preflight && step_country && step_wifi ;;
-                    3) step_preflight && step_country && step_dns ;;
+                    1) step_lan ;;
+                    2) step_country && step_wifi ;;
+                    3) step_country && step_dns ;;
                     0) ;;
                     *) printf 'Некорректный ввод.\n' ;;
                 esac
@@ -128,11 +129,11 @@ menu() {
                 programs_menu
                 read -r _section_choice || continue
                 case "$_section_choice" in
-                    1) step_preflight && setup_ru ;;
-                    2) step_preflight && setup_vn ;;
-                    3) step_preflight && step_tailscale ;;
-                    4) step_preflight && step_wol ;;
-                    5) step_preflight && step_storage ;;
+                    1) setup_ru ;;
+                    2) setup_vn ;;
+                    3) step_tailscale ;;
+                    4) step_wol ;;
+                    5) step_storage ;;
                     0) ;;
                     *) printf 'Некорректный ввод.\n' ;;
                 esac
@@ -141,8 +142,8 @@ menu() {
                 additional_menu
                 read -r _section_choice || continue
                 case "$_section_choice" in
-                    1) step_preflight && step_banners ;;
-                    2) step_preflight && step_button ;;
+                    1) step_banners ;;
+                    2) step_button ;;
                     0) ;;
                     *) printf 'Некорректный ввод.\n' ;;
                 esac
