@@ -96,8 +96,8 @@ additional_menu() {
 }
 
 menu() {
+    step_preflight
     while true; do
-        step_preflight
         show_menu
         read -r _menu_choice || return 0
         case "$_menu_choice" in
